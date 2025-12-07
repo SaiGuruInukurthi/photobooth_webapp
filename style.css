@@ -1,0 +1,85 @@
+body {
+  background-color: #FFB3C1;
+  font-family: 'Poppins', sans-serif;
+  color: #C9184A;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #C9184A;
+}
+
+.container {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #FF8FA3; /* salmon pink background container */
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+video, canvas {
+  width: 480px;
+  height: auto;
+  border-radius: 12px;
+  border: 4px solid #C9184A;
+  box-shadow: 0 4px 15px rgba(201, 24, 74, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+.filters, .controls {
+  text-align: center;
+  margin-top: 20px;
+}
+
+button, select {
+  padding: 12px 20px;
+  margin: 10px 5px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #FF4D6D;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+button:hover, select:hover {
+  background-color: #C9184A;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+  }
+
+  video, canvas {
+    width: 100%;
+  }
+}
+
+.flash {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  opacity: 0;
+  z-index: 1000;
+  animation: flashAnim 0.4s ease;
+}
+
+@keyframes flashAnim {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+#canvas {
+  display: none;
+}
+
+
