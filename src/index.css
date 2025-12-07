@@ -26,15 +26,33 @@ h1 {
 }
 
 /* Custom select dropdown styling */
-select option {
-  background-color: #4a3828;
-  color: #f5e6d3;
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-select option:checked,
+select option {
+  background-color: #4a3828 !important;
+  color: #f5e6d3 !important;
+  padding: 8px;
+}
+
+select option:checked {
+  background-color: #5a4838 !important;
+  background: #5a4838 !important;
+  color: #ffe8b3 !important;
+}
+
 select option:hover {
-  background-color: #5a4838;
-  color: #ffe8b3;
+  background-color: #5a4838 !important;
+  background: linear-gradient(#5a4838, #5a4838) !important;
+  color: #ffe8b3 !important;
+}
+
+select option[selected] {
+  background-color: #5a4838 !important;
+  color: #ffe8b3 !important;
 }
 
 /* Film flicker animation */

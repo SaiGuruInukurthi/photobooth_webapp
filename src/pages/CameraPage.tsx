@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FilmStrip } from "../components/FilmStrip";
 import { FilmFlicker } from "../components/FilmFlicker";
 import { FilmArtifacts } from "../components/FilmArtifacts";
+import { CustomSelect } from "../components/CustomSelect";
 
 type FilterType = 'none' | 'grayscale(100%)' | 'sepia(100%)' | 'invert(100%)' | 'blur(3px)' | 'contrast(200%)';
 type TimerType = 'off' | '3' | '5' | '10';
@@ -174,36 +175,32 @@ export default function CameraPage() {
         {/* Filter and Timer selection */}
         {!capturedImage && (
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6 flex-wrap">
-            <div className="flex items-center gap-3">
-              <label className="text-[#f5e6d3] text-sm tracking-wider">Choose Filter:</label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as FilterType)}
-                className="px-4 py-2 bg-[#4a3828] text-[#f5e6d3] rounded border-2 border-[#2d1810] focus:outline-none focus:border-[#ffe8b3] tracking-wide"
-              >
-                <option value="none">None</option>
-                <option value="grayscale(100%)">Grayscale</option>
-                <option value="sepia(100%)">Sepia</option>
-                <option value="invert(100%)">Invert</option>
-                <option value="blur(3px)">Blur</option>
-                <option value="contrast(200%)">High Contrast</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Choose Filter"
+              value={filter}
+              onChange={(value) => setFilter(value as FilterType)}
+              options={[
+                { value: 'none', label: 'None' },
+                { value: 'grayscale(100%)', label: 'Grayscale' },
+                { value: 'sepia(100%)', label: 'Sepia' },
+                { value: 'invert(100%)', label: 'Invert' },
+                { value: 'blur(3px)', label: 'Blur' },
+                { value: 'contrast(200%)', label: 'High Contrast' }
+              ]}
+            />
 
-            <div className="flex items-center gap-3">
-              <label className="text-[#f5e6d3] text-sm tracking-wider">Timer:</label>
-              <select
-                value={timer}
-                onChange={(e) => setTimer(e.target.value as TimerType)}
-                disabled={countdown !== null}
-                className="px-4 py-2 bg-[#4a3828] text-[#f5e6d3] rounded border-2 border-[#2d1810] focus:outline-none focus:border-[#ffe8b3] tracking-wide disabled:opacity-50"
-              >
-                <option value="off">Off</option>
-                <option value="3">3 sec</option>
-                <option value="5">5 sec</option>
-                <option value="10">10 sec</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Timer"
+              value={timer}
+              onChange={(value) => setTimer(value as TimerType)}
+              disabled={countdown !== null}
+              options={[
+                { value: 'off', label: 'Off' },
+                { value: '3', label: '3 sec' },
+                { value: '5', label: '5 sec' },
+                { value: '10', label: '10 sec' }
+              ]}
+            />
           </div>
         )}
 
@@ -211,7 +208,7 @@ export default function CameraPage() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={goBack}
-            className="px-6 py-3 bg-[#2d1810] hover:bg-[#3d2820] text-[#f5e6d3] rounded-md tracking-wider transition-all text-sm font-semibold shadow-lg"
+            className="px-8 py-3 bg-[#4a3828] hover:bg-[#5a4838] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-sm font-semibold shadow-lg"
           >
             ← Back
           </button>
@@ -222,7 +219,7 @@ export default function CameraPage() {
               disabled={countdown !== null}
               className="px-8 py-3 bg-[#4a3828] hover:bg-[#5a4838] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-               {countdown !== null ? 'Starting...' : 'Click !'}
+               {countdown !== null ? 'Starting...' : '˗ˏˋClickˎˊ˗'}
             </button>
           ) : (
             <>
