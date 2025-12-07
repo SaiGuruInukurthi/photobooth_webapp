@@ -136,7 +136,7 @@ export default function CameraPage() {
       {/* Main content */}
       <div className="relative z-40 w-full max-w-4xl px-4">
         <h1 className="text-[#f5e6d3] text-center tracking-wide text-4xl md:text-5xl mb-6">
-          Interactive Photobooth
+          Vintage Photobooth
         </h1>
 
         {/* Camera/Photo frame */}
@@ -222,7 +222,7 @@ export default function CameraPage() {
               disabled={countdown !== null}
               className="px-8 py-3 bg-[#4a3828] hover:bg-[#5a4838] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              📸 {countdown !== null ? 'Starting...' : 'Capture Photo'}
+               {countdown !== null ? 'Starting...' : 'Click !'}
             </button>
           ) : (
             <>
@@ -230,13 +230,13 @@ export default function CameraPage() {
                 onClick={retakePhoto}
                 className="px-8 py-3 bg-[#4a3828] hover:bg-[#5a4838] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-sm font-semibold shadow-lg"
               >
-                🔁 Retake
+                ⟳ Retake
               </button>
               <button
                 onClick={downloadPhoto}
                 className="px-8 py-3 bg-[#5a4838] hover:bg-[#6a5848] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-sm font-semibold shadow-lg"
               >
-                ⬇️ Download
+                ⬇ Download
               </button>
             </>
           )}

@@ -35,7 +35,7 @@ export default function HomePage() {
           onClick={handleCapture}
           className="mt-12 px-10 py-4 bg-[#4a3828] hover:bg-[#5a4838] rounded-md text-[#f5e6d3] tracking-[0.3em] transition-all uppercase text-sm font-semibold shadow-lg hover:shadow-xl"
         >
-          Capture!
+          Capture Photo ♡ 
         </button>
       </div>
     </div>

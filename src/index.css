@@ -25,6 +25,18 @@ h1 {
   letter-spacing: 0.05em;
 }
 
+/* Custom select dropdown styling */
+select option {
+  background-color: #4a3828;
+  color: #f5e6d3;
+}
+
+select option:checked,
+select option:hover {
+  background-color: #5a4838;
+  color: #ffe8b3;
+}
+
 /* Film flicker animation */
 @keyframes flicker {
   0%, 100% { opacity: 1; }
