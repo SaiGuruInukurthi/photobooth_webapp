@@ -12,6 +12,7 @@ export default function CameraPage() {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const photoStripRef = useRef<HTMLDivElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [filter, setFilter] = useState<FilterType>('none');
   const [timer, setTimer] = useState<TimerType>('off');
@@ -21,6 +22,7 @@ export default function CameraPage() {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
   const [showFlash, setShowFlash] = useState(false);
+  const [customNote, setCustomNote] = useState('');
 
   useEffect(() => {
     // Start webcam
@@ -125,17 +127,34 @@ export default function CameraPage() {
   const retakePhoto = () => {
     setCapturedImages([]);
     setCurrentPhotoIndex(0);
+    setCustomNote('');
   };
 
-  const downloadPhoto = () => {
-    if (capturedImages.length === 0) return;
+  const downloadPhoto = async () => {
+    if (capturedImages.length === 0 || !photoStripRef.current) return;
 
-    capturedImages.forEach((image, index) => {
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(photoStripRef.current, {
+        backgroundColor: '#f5e6d3',
+        scale: 2,
+        logging: false,
+      });
+      
       const link = document.createElement('a');
-      link.href = image;
-      link.download = `vintage-photo-${Date.now()}-${index + 1}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.download = `vintage-photobooth-${Date.now()}.png`;
       link.click();
-    });
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback: download individual images
+      capturedImages.forEach((image, index) => {
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `vintage-photo-${Date.now()}-${index + 1}.png`;
+        link.click();
+      });
+    }
   };
 
   const goBack = () => {
@@ -166,7 +185,7 @@ export default function CameraPage() {
 
         {/* Camera/Photo frame */}
         <div className="relative mx-auto mb-4 md:mb-6 w-full max-w-2xl">
-          <div className="relative bg-[#2d1810] p-2 md:p-4 rounded-lg border-2 md:border-4 border-[#4a3828] shadow-2xl">
+          <div className="relative">
             {capturedImages.length === 0 ? (
               <>
                 <video
@@ -192,15 +211,42 @@ export default function CameraPage() {
                 )}
               </>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {capturedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Captured ${index + 1}`}
-                    className="w-full h-auto rounded"
+              <div ref={photoStripRef} className="relative bg-[#f5e6d3] p-6 rounded-lg shadow-xl max-w-sm mx-auto">
+                {/* Photos in vertical strip */}
+                <div className="flex flex-col gap-3">
+                  {capturedImages.map((image, index) => (
+                    <div key={index} className="relative bg-white p-1 shadow-sm">
+                      <img
+                        src={image}
+                        alt={`Captured ${index + 1}`}
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Custom note input */}
+                <div className="mt-3 text-center pb-2 overflow-visible">
+                  <textarea
+                    value={customNote}
+                    onChange={(e) => setCustomNote(e.target.value)}
+                    placeholder="Add a note..."
+                    rows={1}
+                    className="w-full px-2 py-1 text-center bg-transparent border-none text-[#8B6914] placeholder-[#8B6914] placeholder-opacity-50 focus:outline-none font-serif italic text-base resize-none"
+                    style={{ 
+                      fontFamily: "'Playfair Display', serif", 
+                      color: '#8B6914', 
+                      lineHeight: '1.5',
+                      overflow: 'visible',
+                      minHeight: '1.5em'
+                    }}
+                    onInput={(e) => {
+                      const target = e.target as HTMLTextAreaElement;
+                      target.style.height = 'auto';
+                      target.style.height = target.scrollHeight + 'px';
+                    }}
                   />
-                ))}
+                </div>
               </div>
             )}
           </div>
