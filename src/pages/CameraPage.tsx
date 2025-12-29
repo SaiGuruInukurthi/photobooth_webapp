@@ -23,15 +23,17 @@ export default function CameraPage() {
   const [isCapturing, setIsCapturing] = useState(false);
   const [showFlash, setShowFlash] = useState(false);
   const [customNote, setCustomNote] = useState('');
+  const [showCharLimitWarning, setShowCharLimitWarning] = useState(false);
+  const textMeasureRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     // Start webcam
-    navigator.mediaDevices.getUserMedia({ 
-      video: { 
+    navigator.mediaDevices.getUserMedia({
+      video: {
         width: { ideal: 1280 },
         height: { ideal: 720 },
         facingMode: 'user'
-      } 
+      }
     })
       .then(mediaStream => {
         setStream(mediaStream);
@@ -75,27 +77,27 @@ export default function CameraPage() {
 
     // Get image data
     const imageData = canvas.toDataURL('image/png');
-    
+
     return imageData;
   };
 
   const captureMultiplePhotos = async (count: number) => {
     const images: string[] = [];
-    
+
     for (let i = 0; i < count; i++) {
       setCurrentPhotoIndex(i + 1);
-      
+
       // Only use timer if user selected one (not 'off')
       if (timer !== 'off') {
         const seconds = parseInt(timer);
         setCountdown(seconds);
-        
+
         await new Promise<void>(resolve => {
           let remaining = seconds;
           const interval = setInterval(() => {
             remaining--;
             setCountdown(remaining);
-            
+
             if (remaining <= 0) {
               clearInterval(interval);
               setCountdown(null);
@@ -104,14 +106,14 @@ export default function CameraPage() {
           }, 1000);
         });
       }
-      
+
       // Take the photo
       const image = takePicture();
       if (image) {
         images.push(image);
       }
     }
-    
+
     setCapturedImages(images);
     setIsCapturing(false);
     setCurrentPhotoIndex(0);
@@ -140,7 +142,7 @@ export default function CameraPage() {
         scale: 2,
         logging: false,
       });
-      
+
       const link = document.createElement('a');
       link.href = canvas.toDataURL('image/png');
       link.download = `vintage-photobooth-${Date.now()}.png`;
@@ -226,26 +228,54 @@ export default function CameraPage() {
                 </div>
 
                 {/* Custom note input */}
-                <div className="mt-3 text-center pb-2 overflow-visible">
-                  <textarea
+                <div className="mt-3 text-center pb-2 overflow-visible relative">
+                  {/* Hidden span to measure text width */}
+                  <span
+                    ref={textMeasureRef}
+                    className="absolute invisible whitespace-nowrap px-2 font-serif italic text-base"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    aria-hidden="true"
+                  >
+                    {customNote || 'M'}
+                  </span>
+                  <input
+                    type="text"
                     value={customNote}
-                    onChange={(e) => setCustomNote(e.target.value)}
-                    placeholder="Add a note..."
-                    rows={1}
-                    className="w-full px-2 py-1 text-center bg-transparent border-none text-[#8B6914] placeholder-[#8B6914] placeholder-opacity-50 focus:outline-none font-serif italic text-base resize-none"
-                    style={{ 
-                      fontFamily: "'Playfair Display', serif", 
-                      color: '#8B6914', 
-                      lineHeight: '1.5',
-                      overflow: 'visible',
-                      minHeight: '1.5em'
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      // Check if text would overflow using the hidden span
+                      if (textMeasureRef.current) {
+                        const containerWidth = e.target.offsetWidth - 16; // Account for padding
+                        textMeasureRef.current.textContent = newValue;
+                        const textWidth = textMeasureRef.current.offsetWidth;
+
+                        if (textWidth > containerWidth && newValue.length > customNote.length) {
+                          // Text would overflow, show warning and prevent
+                          setShowCharLimitWarning(true);
+                          setTimeout(() => setShowCharLimitWarning(false), 2000);
+                          return;
+                        }
+                      }
+                      setShowCharLimitWarning(false);
+                      setCustomNote(newValue);
                     }}
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      target.style.height = 'auto';
-                      target.style.height = target.scrollHeight + 'px';
+                    placeholder="Add a note..."
+                    className="w-full px-2 py-1 text-center bg-transparent border-none text-[#8B6914] placeholder-[#8B6914] placeholder-opacity-50 focus:outline-none font-serif italic text-base"
+                    style={{
+                      fontFamily: "'Playfair Display', serif",
+                      color: '#8B6914',
+                      lineHeight: '1.5'
                     }}
                   />
+                  {/* Character limit warning */}
+                  {showCharLimitWarning && (
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2 -bottom-6 text-xs text-red-600 bg-red-50 px-2 py-1 rounded shadow-sm whitespace-nowrap animate-pulse"
+                      style={{ fontFamily: 'sans-serif', fontStyle: 'normal' }}
+                    >
+                      Can't add more characters ✋
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -312,7 +342,7 @@ export default function CameraPage() {
               disabled={isCapturing}
               className="px-6 sm:px-8 py-3 bg-[#4a3828] hover:bg-[#5a4838] text-[#f5e6d3] rounded-md tracking-[0.2em] transition-all uppercase text-xs sm:text-sm font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             >
-               {isCapturing ? 'Capturing...' : '˗ˏˋClickˎˊ˗'}
+              {isCapturing ? 'Capturing...' : '˗ˏˋClickˎˊ˗'}
             </button>
           ) : (
             <>
