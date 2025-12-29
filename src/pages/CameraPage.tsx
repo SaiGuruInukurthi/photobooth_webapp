@@ -24,6 +24,7 @@ export default function CameraPage() {
   const [showFlash, setShowFlash] = useState(false);
   const [customNote, setCustomNote] = useState('');
   const [showCharLimitWarning, setShowCharLimitWarning] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const textMeasureRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -136,19 +137,30 @@ export default function CameraPage() {
     if (capturedImages.length === 0 || !photoStripRef.current) return;
 
     try {
+      // Set downloading state to swap input for static text
+      setIsDownloading(true);
+
+      // Wait for React to re-render with static text
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const { default: html2canvas } = await import('html2canvas');
-      const canvas = await html2canvas(photoStripRef.current, {
+      const element = photoStripRef.current;
+      const canvas = await html2canvas(element, {
         backgroundColor: '#f5e6d3',
         scale: 2,
         logging: false,
+        useCORS: true,
       });
 
       const link = document.createElement('a');
       link.href = canvas.toDataURL('image/png');
       link.download = `vintage-photobooth-${Date.now()}.png`;
       link.click();
+
+      setIsDownloading(false);
     } catch (error) {
       console.error('Download failed:', error);
+      setIsDownloading(false);
       // Fallback: download individual images
       capturedImages.forEach((image, index) => {
         const link = document.createElement('a');
@@ -213,7 +225,7 @@ export default function CameraPage() {
                 )}
               </>
             ) : (
-              <div ref={photoStripRef} className="relative bg-[#f5e6d3] p-6 rounded-lg shadow-xl max-w-sm mx-auto">
+              <div ref={photoStripRef} className="relative bg-[#f5e6d3] p-6 pb-8 rounded-lg shadow-xl max-w-sm mx-auto">
                 {/* Photos in vertical strip */}
                 <div className="flex flex-col gap-3">
                   {capturedImages.map((image, index) => (
@@ -228,7 +240,7 @@ export default function CameraPage() {
                 </div>
 
                 {/* Custom note input */}
-                <div className="mt-3 text-center pb-2 overflow-visible relative">
+                <div className="mt-3 text-center pb-4 overflow-visible relative">
                   {/* Hidden span to measure text width */}
                   <span
                     ref={textMeasureRef}
@@ -238,37 +250,55 @@ export default function CameraPage() {
                   >
                     {customNote || 'M'}
                   </span>
-                  <input
-                    type="text"
-                    value={customNote}
-                    onChange={(e) => {
-                      const newValue = e.target.value;
-                      // Check if text would overflow using the hidden span
-                      if (textMeasureRef.current) {
-                        const containerWidth = e.target.offsetWidth - 16; // Account for padding
-                        textMeasureRef.current.textContent = newValue;
-                        const textWidth = textMeasureRef.current.offsetWidth;
 
-                        if (textWidth > containerWidth && newValue.length > customNote.length) {
-                          // Text would overflow, show warning and prevent
-                          setShowCharLimitWarning(true);
-                          setTimeout(() => setShowCharLimitWarning(false), 2000);
-                          return;
+                  {/* Show static text during download, input during normal use */}
+                  {isDownloading ? (
+                    <p
+                      className="w-full px-2 py-2 text-center font-serif italic text-base"
+                      style={{
+                        fontFamily: "'Playfair Display', serif",
+                        color: '#8B6914',
+                        lineHeight: '1.6',
+                        margin: 0,
+                        minHeight: '1.6em'
+                      }}
+                    >
+                      {customNote || '\u00A0'}
+                    </p>
+                  ) : (
+                    <input
+                      type="text"
+                      value={customNote}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        // Check if text would overflow using the hidden span
+                        if (textMeasureRef.current) {
+                          const containerWidth = e.target.offsetWidth - 16; // Account for padding
+                          textMeasureRef.current.textContent = newValue;
+                          const textWidth = textMeasureRef.current.offsetWidth;
+
+                          if (textWidth > containerWidth && newValue.length > customNote.length) {
+                            // Text would overflow, show warning and prevent
+                            setShowCharLimitWarning(true);
+                            setTimeout(() => setShowCharLimitWarning(false), 2000);
+                            return;
+                          }
                         }
-                      }
-                      setShowCharLimitWarning(false);
-                      setCustomNote(newValue);
-                    }}
-                    placeholder="Add a note..."
-                    className="w-full px-2 py-1 text-center bg-transparent border-none text-[#8B6914] placeholder-[#8B6914] placeholder-opacity-50 focus:outline-none font-serif italic text-base"
-                    style={{
-                      fontFamily: "'Playfair Display', serif",
-                      color: '#8B6914',
-                      lineHeight: '1.5'
-                    }}
-                  />
+                        setShowCharLimitWarning(false);
+                        setCustomNote(newValue);
+                      }}
+                      placeholder="Add a note..."
+                      className="w-full px-2 py-1 text-center bg-transparent border-none text-[#8B6914] placeholder-[#8B6914] placeholder-opacity-50 focus:outline-none font-serif italic text-base"
+                      style={{
+                        fontFamily: "'Playfair Display', serif",
+                        color: '#8B6914',
+                        lineHeight: '1.5'
+                      }}
+                    />
+                  )}
+
                   {/* Character limit warning */}
-                  {showCharLimitWarning && (
+                  {showCharLimitWarning && !isDownloading && (
                     <div
                       className="absolute left-1/2 -translate-x-1/2 -bottom-6 text-xs text-red-600 bg-red-50 px-2 py-1 rounded shadow-sm whitespace-nowrap animate-pulse"
                       style={{ fontFamily: 'sans-serif', fontStyle: 'normal' }}
