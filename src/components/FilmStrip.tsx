@@ -17,7 +17,7 @@ export function FilmStrip({ side }: FilmStripProps) {
         }}
       >
         <div className="film-roll-animation flex flex-col items-center">
-          {sprocketHoles.concat(sprocketHoles).map((i, index) => (
+          {sprocketHoles.concat(sprocketHoles).map((_, index) => (
             <div key={index} className="relative my-8">
               {/* Sprocket hole glow effect */}
               <div className="absolute inset-0 bg-[#ffe8b3] blur-md opacity-60"></div>
@@ -54,7 +54,7 @@ export function FilmStrip({ side }: FilmStripProps) {
       }}
     >
       <div className="film-roll-horizontal flex flex-row items-center h-full">
-        {sprocketHoles.concat(sprocketHoles).map((i, index) => (
+        {sprocketHoles.concat(sprocketHoles).map((_, index) => (
           <div key={index} className="relative mx-6">
             {/* Sprocket hole glow effect */}
             <div className="absolute inset-0 bg-[#ffe8b3] blur-md opacity-60"></div>
