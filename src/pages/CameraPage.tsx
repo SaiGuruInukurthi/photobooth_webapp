@@ -183,7 +183,7 @@ export default function CameraPage() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-[#1a0f0a] overflow-hidden flex items-center justify-center py-4 md:py-8 px-2 sm:px-4">
+    <div className="relative w-full h-screen bg-[#1a0f0a] overflow-hidden flex items-center justify-center py-2 px-2 sm:px-4">
       {/* Flickering overlay effect */}
       <FilmFlicker />
 
@@ -197,12 +197,12 @@ export default function CameraPage() {
 
       {/* Main content */}
       <div className="relative z-40 w-full max-w-4xl px-2 sm:px-4">
-        <h1 className="text-[#f5e6d3] text-center tracking-wide text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-4 md:mb-6">
+        <h1 className="text-[#f5e6d3] text-center tracking-wide text-xl sm:text-2xl md:text-3xl mb-2 md:mb-3">
           Vintage Photobooth
         </h1>
 
         {/* Camera/Photo frame */}
-        <div className="relative mx-auto mb-4 md:mb-6 w-full max-w-2xl">
+        <div className="relative mx-auto mb-2 md:mb-3 w-full max-w-3xl">
           <div className="relative">
             {capturedImages.length === 0 ? (
               <>
@@ -229,15 +229,20 @@ export default function CameraPage() {
                 )}
               </>
             ) : (
-              <div ref={photoStripRef} className="relative bg-[#f5e6d3] p-6 pb-8 rounded-lg shadow-xl max-w-sm mx-auto">
+              <div ref={photoStripRef} className="relative bg-[#f5e6d3] p-2 sm:p-3 pb-3 sm:pb-4 rounded-lg shadow-xl w-[240px] sm:w-[280px] md:w-[320px] mx-auto">
                 {/* Photos in vertical strip */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
                   {capturedImages.map((image, index) => (
-                    <div key={index} className="relative bg-white p-1 shadow-sm">
+                    <div key={index} className="relative bg-white p-0.5 shadow-sm">
                       <img
                         src={image}
                         alt={`Captured ${index + 1}`}
                         className="w-full h-auto"
+                        style={{ 
+                          maxHeight: capturedImages.length === 4 ? '100px' : 
+                                     capturedImages.length === 3 ? '115px' : 
+                                     capturedImages.length === 2 ? '140px' : '180px' 
+                        }}
                       />
                     </div>
                   ))}
@@ -318,7 +323,7 @@ export default function CameraPage() {
 
         {/* Filter, Timer and Photo Count selection */}
         {capturedImages.length === 0 && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-6 mb-4 md:mb-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-4 mb-2 md:mb-3">
             <CustomSelect
               label="Choose Filter"
               value={filter}
