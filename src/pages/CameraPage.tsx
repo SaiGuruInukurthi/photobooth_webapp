@@ -72,9 +72,13 @@ export default function CameraPage() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Apply filter and draw
+    // Apply filter and draw (flip horizontally to match mirrored video)
     context.filter = filter;
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Reset transform
+    context.setTransform(1, 0, 0, 1, 0, 0);
 
     // Get image data
     const imageData = canvas.toDataURL('image/png');
@@ -208,7 +212,7 @@ export default function CameraPage() {
                   playsInline
                   muted
                   className="w-full h-auto rounded"
-                  style={{ filter }}
+                  style={{ filter, transform: 'scaleX(-1)' }}
                 />
                 {/* Countdown overlay */}
                 {countdown !== null && (
